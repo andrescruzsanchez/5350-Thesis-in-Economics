@@ -9,7 +9,7 @@ rm(list=ls())
 cat("\014") 
 
 # Set working directory
-setwd("~/Documents/Handelshögskolan/MSc Economic/Semester 4/5350 Thesis in Economics/thesis_code")
+setwd("~/Documents/Handelshögskolan/MSc Economic/Semester 4/5350 Thesis in Economics/Processed Data")
 
 # Loading packages 
 library(tidyverse)
@@ -42,6 +42,8 @@ library(coefplot)
 
 # ---- School Data English ---- #
 
+# -- Data Preparation -- #
+
 # Reading school data excel file and importing engelska sheet
 school_data_engelska <- read_excel("school_data.xlsx", sheet = "Engelska")
 
@@ -50,6 +52,37 @@ school_data_engelska <- school_data_engelska %>%
   filter(läsår != "2020/21", läsår != "2021/22") %>%
   mutate(time = ifelse(läsår == "2019/20", 1, 0), 
          treated = ifelse(skolform == "gymnasieskola", 1, 0))
+
+# -- Checking the Parallel Trend Assumption -- #
+
+# Time Trend
+time_trend <- school_data_engelska %>% 
+  drop_na() %>% 
+  group_by(läsår, skolform) %>% 
+  summarise(average = mean(andel_elever_F_eng))
+
+# Parallel Trend Plot
+
+# Setting ggplot style settings
+theme<- theme(
+    panel.background = element_rect(fill='transparent'),
+    plot.background = element_rect(fill='transparent', color=NA),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    legend.background = element_rect(fill='transparent'),
+    legend.box.background = element_rect(fill='transparent'))
+  
+parallel_trend <- ggplot(time_trend, mapping=aes(x=läsår, y=average, group=skolform, color=skolform)) +
+  geom_point() + geom_line() + 
+  xlab("Läsår") + ylab("Average % of students with F") +
+  geom_vline(xintercept="2019/20", linetype="solid") +
+  theme
+
+parallel_trend
+
+
+
+
 
 # -- Whisker Plot - #
 whisker_regression_1 <-lm_robust(andel_elever_F_eng ~ treated*läsår, data = school_data_engelska)
