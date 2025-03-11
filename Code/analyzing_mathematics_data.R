@@ -102,23 +102,23 @@ my_theme <- theme(
 #
 #
 
-# ---- School Data English ---- #
+# ---- School Data Mathematics ---- #
 
 #
 #
 
 # -- Data Preparation -- #
 
-# Reading school data excel file and importing english sheet
-school_data_english <- read_excel("school_data.xlsx", sheet = "English")
+# Reading school data excel file and importing Mathematics sheet
+school_data <- read_excel("school_data.xlsx", sheet = "Mathematics")
 
 # Filter 
-school_data_english <- school_data_english %>%
+school_data <- school_data %>%
   filter(graduating_students >= 0) %>%
   filter(academic_year != "2020/21", academic_year != "2021/22") 
 
 # Variable Modification
-school_data_english <- school_data_english %>%
+school_data <- school_data %>%
   mutate(treatment_year = ifelse(academic_year == "2019/20", 1, 0), 
          treatment_group = ifelse(educational_stage == "upper secondary school", 1, 0),
          academic_year = as.factor(academic_year),
@@ -126,12 +126,12 @@ school_data_english <- school_data_english %>%
   mutate(academic_year_spring = as.numeric(paste0("20", sub(".*/", "", academic_year))))
 
 # Define the path to the output folder
-path_output_english <- "/Users/andrescruz/Documents/Handelshögskolan/MSc Economic/Semester 4/5350 Thesis in Economics/Output/English/"
+path_output <- "/Users/andrescruz/Documents/Handelshögskolan/MSc Economic/Semester 4/5350 Thesis in Economics/Output/Mathematics/"
 
 #
 #
 
-# -- Parallel Trend Assumption  -- #
+# -- Parallel Trend Assumption -- #
 
 #
 #
@@ -139,14 +139,14 @@ path_output_english <- "/Users/andrescruz/Documents/Handelshögskolan/MSc Econo
 # - Parallel Trend Plot - #
 
 # Time Trend
-time_trend <- school_data_english %>% 
+time_trend <- school_data %>% 
   drop_na() %>% 
   group_by(academic_year, educational_stage) %>% 
-  summarise(average_share_students_F_eng = mean(share_students_F_eng))
+  summarise(average_share_students_F_ma= mean(share_students_F_ma))
 
 # Plot the Time Trend for each educational stage
 parallel_trend_plot <- ggplot(time_trend, 
-                         mapping=aes(x=academic_year, y=average_share_students_F_eng, 
+                         mapping=aes(x=academic_year, y=average_share_students_F_ma, 
                                      group=educational_stage, color=educational_stage, shape=educational_stage)) + 
   # Adding dots
   geom_point(size = 2.5) +
@@ -162,7 +162,7 @@ parallel_trend_plot <- ggplot(time_trend,
   geom_vline(xintercept = 5.5, linetype = "dashed") + 
   # Modify text
   labs(
-    title = "Parallel Trend Assumption - English",
+    title = "Parallel Trend Assumption - Mathematics",
     x = "Academic Year",
     y = "Average percent of students with F"
     ) +   
@@ -173,7 +173,7 @@ parallel_trend_plot <- ggplot(time_trend,
 print(parallel_trend_plot)
   
 # Use file.path() to ensure correct formatting of the file path
-output_file <- file.path(path_output_english, "parallel_trend_plot_english.png")
+output_file <- file.path(path_output, "parallel_trend_plot.png")
 
 # Save the plot
 ggsave(output_file, parallel_trend_plot, bg = "transparent", width=5, height=4)
@@ -184,12 +184,9 @@ ggsave(output_file, parallel_trend_plot, bg = "transparent", width=5, height=4)
 # - Event Study Plot - #
 
 # Discrete Academic Year Variable
-# Defining the treatment year
-treatment_year <- 2020
-
-event_study_data <- school_data_english %>% 
+event_study_data <- school_data %>% 
   mutate(
-    time_from_treatment = academic_year_spring - treatment_year,
+    time_from_treatment = academic_year_spring - 2020, # MAGIC NUMBER CORRESPONDS TO THE TREATMENT YEAR
     lead_1 = case_when(time_from_treatment == -1 ~ 1, TRUE ~ 0),
     lead_2 = case_when(time_from_treatment == -2 ~ 1, TRUE ~ 0),
     lead_3 = case_when(time_from_treatment == -3 ~ 1, TRUE ~ 0),
@@ -203,12 +200,15 @@ event_study_data <- school_data_english %>%
 # Set the reference (baseline) category to 2018/19 following Björkegren, Svaleryd and Vlachos (2024)
 event_study_data$academic_year <- relevel(event_study_data$academic_year, ref="2018/19")
 
+#
+#
+
 # - Dynamic Difference-in-Difference - #
-dynamic_DiD_regression <- lm(share_students_F_eng ~ academic_year + treatment_group + academic_year:treatment_group + 
+dynamic_DiD <- lm(share_students_F_ma ~ academic_year + treatment_group + academic_year:treatment_group + 
                                share_foreign_background + share_postsecondary_parents + 
                                share_active_certified_teachers + type_of_principal,
                              data = event_study_data)
-summary <- summary(dynamic_DiD_regression)
+dynamic_DiD_summary <- summary(dynamic_DiD)
 
 # Order of Coefficients for the event study plot
 plot_order <- c('academic_year2014/15:treatment_group',
@@ -218,13 +218,13 @@ plot_order <- c('academic_year2014/15:treatment_group',
                 'academic_year2019/20:treatment_group')
 
 # Extracting Coefficients
-results <- tibble(
-  estimates = c(summary$coefficients[plot_order, "Estimate"], 0),
-  standard_errors = c(summary$coefficients[plot_order, "Std. Error"], 0),
+dynamic_DiD_results <- tibble(
+  estimates = c(dynamic_DiD_summary$coefficients[plot_order, "Estimate"], 0),
+  standard_errors = c(dynamic_DiD_summary$coefficients[plot_order, "Std. Error"], 0),
   label = c(-5, -4, -3, -2, 0, -1)
 )
 
-dynamic_did_plot <- ggplot(data = results,  
+dynamic_did_plot <- ggplot(data = dynamic_DiD_results,  
                            aes(x = label, y = estimates)) +
   geom_errorbar(aes(ymin = estimates - 1.96 * standard_errors, 
                     ymax = estimates + 1.96 * standard_errors), 
@@ -240,82 +240,94 @@ dynamic_did_plot <- ggplot(data = results,
 print(dynamic_did_plot)
 
 # Use file.path() to ensure correct formatting of the file path
-output_file <- file.path(path_output_english, "dynamic_did_plot_english.png")
+output_file <- file.path(path_output, "dynamic_did_plot.png")
 
 # Save the plot
 ggsave(output_file, dynamic_did_plot, bg = "transparent", width=5, height=4)
 
 # - Leads and Lags Event Study - #
 
-event_study_regression <- lm(share_students_F_eng ~ lead_4 + lead_3 + lead_2 + lag_1, data = event_study_data)
-summary <- summary(event_study_regression)
+event_study <- lm(share_students_F_ma ~ (lead_5 + lead_4 + lead_3 + lead_2 + lag_0)*treatment_group +
+                               share_foreign_background + share_postsecondary_parents + 
+                               share_active_certified_teachers + type_of_principal, data = event_study_data)
+event_study_summary <- summary(event_study)
 
+# Order of Coefficients for the event study plot
+plot_order <- c('lead_5:treatment_group',
+                'lead_4:treatment_group', 
+                'lead_3:treatment_group', 
+                'lead_2:treatment_group', 
+                'lag_0:treatment_group')
 
+# Extracting Coefficients
+event_study_results <- tibble(
+  estimates = c(event_study_summary$coefficients[plot_order, "Estimate"], 0),
+  standard_errors = c(event_study_summary$coefficients[plot_order, "Std. Error"], 0),
+  label = c(-5, -4, -3, -2, 0, -1)
+)
 
+lead_lag_plot <- ggplot(data = event_study_results,  
+                           aes(x = label, y = estimates)) +
+  geom_errorbar(aes(ymin = estimates - 1.96 * standard_errors, 
+                    ymax = estimates + 1.96 * standard_errors), 
+                size = 0.5, width = 0.05, color = "black", alpha = 0.75) +  
+  geom_point(shape = 18, size = 2.5, color = "black") + 
+  xlab('Years before and after school closures') +
+  ylab('Average percent of students with F') +
+  geom_hline(yintercept = 0, linetype = "solid", color = 'brown', alpha = 0.75) +  
+  geom_vline(xintercept = -0.5, linetype = "dashed") +
+  my_theme
 
+# Print Dynamic DiD Plot
+print(lead_lag_plot)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+#
+#
 
 # -- Difference-in-Difference Estimation -- #
 
 # Step 1 Estimate model with default standard errors
 # Step 2 Construct robust standard error
 
-# Set the reference (baseline) category to 2018/19 following Björkegren, Svaleryd and Vlachos (2024)
-school_data_english$academic_year <- relevel(school_data_english$academic_year, ref="2018/19")
-levels(school_data_english$academic_year)
-
 # Model 1 - Default DiD Model
-model_1 <- lm(share_students_F_eng ~ treatment_year + treatment_group + DiD, 
-                      data = school_data_english)
+model_1 <- lm(share_students_F_ma ~ treatment_year + treatment_group + DiD, 
+                      data = school_data)
 
 robust_se_1 <- sqrt(diag(vcovHC(model_1, type = "HC1"))) # Robust Standard Errors
 
 clustered_se_1 <- sqrt(diag(vcovCL(model_1, cluster = ~ school_municipality)))  # Clustered Standard Errors
 
 # Model 2 - Adding share_postsecondary_parents
-model_2 <- lm(share_students_F_eng ~ treatment_year + treatment_group + DiD +
+model_2 <- lm(share_students_F_ma ~ treatment_year + treatment_group + DiD +
                 share_foreign_background, 
-              data = school_data_english)
+              data = school_data)
 
 robust_se_2 <- sqrt(diag(vcovHC(model_2, type = "HC1"))) # Robust Standard Errors
 clustered_se_2 <- sqrt(diag(vcovCL(model_2, cluster = ~ school_municipality)))  # Clustered Standard Errors
 
 
 # Model 3 - Adding share_postsecondary_parents
-model_3 <- lm(share_students_F_eng ~ treatment_year + treatment_group + DiD +
+model_3 <- lm(share_students_F_ma ~ treatment_year + treatment_group + DiD +
                 share_foreign_background + share_postsecondary_parents, 
-              data = school_data_english)
+              data = school_data)
 
 robust_se_3 <- sqrt(diag(vcovHC(model_3, type = "HC1"))) # Robust Standard Errors
 clustered_se_3 <- sqrt(diag(vcovCL(model_3, cluster = ~ school_municipality)))  # Clustered Standard Errors
 
 # Model 4 - Adding share_active_certified_teachers
-model_4 <- lm(share_students_F_eng ~ treatment_year + treatment_group + DiD +
+model_4 <- lm(share_students_F_ma ~ treatment_year + treatment_group + DiD +
                 share_foreign_background + share_postsecondary_parents + 
                 share_active_certified_teachers, 
-              data = school_data_english)
+              data = school_data)
 
 robust_se_4 <- sqrt(diag(vcovHC(model_4, type = "HC1"))) # Robust Standard Errors
 clustered_se_4 <- sqrt(diag(vcovCL(model_4, cluster = ~ school_municipality)))  # Clustered Standard Errors
 
 # Model 5 - Adding type_of_principal
-model_5 <- lm(share_students_F_eng ~ treatment_year + treatment_group + DiD +
+model_5 <- lm(share_students_F_ma ~ treatment_year + treatment_group + DiD +
                 share_foreign_background + share_postsecondary_parents + 
                 share_active_certified_teachers + type_of_principal, 
-              data = school_data_english)
+              data = school_data)
 
 robust_se_5 <- sqrt(diag(vcovHC(model_5, type = "HC1"))) # Robust Standard Errors
 clustered_se_5 <- sqrt(diag(vcovCL(model_5, cluster = ~ school_municipality)))  # Clustered Standard Errors
@@ -340,7 +352,7 @@ clustered_se_list <- list(clustered_se_1, clustered_se_2, clustered_se_3, cluste
 # - Exporting Regression Output - # 
 
 # Define the output file path
-output_file <- file.path(path_output_english, "regression_output_english_1.html")
+output_file <- file.path(path_output, "regression_output_default_standard_errors.html")
 
 # Without Robust Standard Errors
 
@@ -350,7 +362,7 @@ stargazer::stargazer(
   model.numbers = FALSE,
   align = TRUE,
   dep.var.caption = "Dependent variable: Y",
-  dep.var.labels = "Share of Students with F in English",
+  dep.var.labels = "Share of Students with F in Mathematics",
   column.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
   covariate.labels = c("Treatment Year", "Treatment Group", "DiD",
                        "Share Foreign Background", "Share Postsecondary Parents",
@@ -364,7 +376,7 @@ stargazer::stargazer(
 # With Robust Standard Errors
 
 # Use file.path() to ensure correct formatting of the file path
-output_file <- file.path(path_output_english, "regression_output_english_2.html")
+output_file <- file.path(path_output, "regression_output_robust_standard_errors.html")
 
 # Generate the Stargazer table dynamically
 stargazer::stargazer(
@@ -373,7 +385,7 @@ stargazer::stargazer(
   model.numbers = FALSE,
   align = TRUE,
   dep.var.caption = "Dependent variable: Y",
-  dep.var.labels = "Share of Students with F in English",
+  dep.var.labels = "Share of Students with F in Mathematics",
   column.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
   covariate.labels = c("Treatment Year", "Treatment Group", "DiD",
                        "Share Foreign Background", "Share Postsecondary Parents",
@@ -387,7 +399,7 @@ stargazer::stargazer(
 # With Clustered Standard Errors
 
 # Use file.path() to ensure correct formatting of the file path
-output_file <- file.path(path_output_english, "regression_output_english_3.html")
+output_file <- file.path(path_output, "regression_output_clustered_standard_errors.html")
 
 # Generate the Stargazer table dynamically
 stargazer::stargazer(
@@ -396,7 +408,7 @@ stargazer::stargazer(
   model.numbers = FALSE,
   align = TRUE,
   dep.var.caption = "Dependent variable: Y",
-  dep.var.labels = "Share of Students with F in English",
+  dep.var.labels = "Share of Students with F in Mathematics",
   column.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
   covariate.labels = c("Treatment Year", "Treatment Group", "DiD",
                        "Share Foreign Background", "Share Postsecondary Parents",
@@ -407,26 +419,7 @@ stargazer::stargazer(
   out = output_file  # Save the table as an HTML file
 )
 
-#
-#
-#
-#
-#
-#
 
-
-# --- Matemathics ----
-school_data_matematik <- read_excel("school_data.xlsx", sheet = "Matematik")
-
-#
-#
-#
-#
-#
-#
-
-# --- Swedish ----
-school_data_svenska <- read_excel("school_data.xlsx", sheet = "Svenska")
 
 
 
