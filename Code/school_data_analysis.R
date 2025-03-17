@@ -104,9 +104,7 @@ school_data_betyg <- read_excel("school_data_betyg.xlsx", sheet = "Betyg")
 
 # Filter 
 school_data_betyg <- school_data_betyg %>%
-  filter(school_size != '1-49') 
-
-# %>% filter(academic_year != "2021/22") 
+  filter(school_size != '1-49', academic_year != "2014/15", academic_year != "2020/21", academic_year != "2021/22") 
 
 # Variable Modification
 school_data_betyg <- school_data_betyg %>%
@@ -151,21 +149,21 @@ parallel_trend_plot <- ggplot(time_trend,
   geom_point(size = 2.5) +
   # Custom color and name 
   scale_color_manual(values = c('grundskola' = 'darkgrey', 'gymnasieskola' = 'black'),
-                     labels = c('grundskola' = 'Lower Secondary, Grade 9', 'gymnasieskola' = 'Upper Secondary, Grade 10')) + 
+                     labels = c('grundskola' = 'Lower Secondary, Grade 9', 'gymnasieskola' = 'Upper Secondary, Grade 10-12')) + 
   # Custom shapes
   scale_shape_manual(values = c('grundskola' = 20, 'gymnasieskola' = 18),  
-                     labels = c('grundskola' = 'Lower Secondary, Grade 9', 'gymnasieskola' = 'Upper Secondary, Grade 10')) +
+                     labels = c('grundskola' = 'Lower Secondary, Grade 9', 'gymnasieskola' = 'Upper Secondary, Grade 10-12')) +
   # Connecting dots
   geom_line(size = 0.5) +
   # X intercept
-  geom_vline(xintercept = 3.5, linetype = "dashed") + 
+  geom_vline(xintercept = 4.5, linetype = "dashed") + 
   # Modify text
   labs(
     title = "Parallel Trend Assumption - Betyg",
     x = "Academic Year",
-    y = "Average percent of students with F"
+    y = "Average Grade Points"
   ) +   
-  ylim(12, 15) +
+  ylim(13, 15) +
   # My theme
   my_theme
 
@@ -189,30 +187,29 @@ ggsave(output_file_betyg, parallel_trend_plot, bg = "transparent", width=6, heig
 school_data_betyg$academic_year <- relevel(school_data_betyg$academic_year, ref="2018/19")
 
 # Estimating the Dynamic DiD Model
-dynamic_DiD <- plm(
+dynamic_DiD <- lm(
   average_grade_points ~ 
     academic_year*(treatment_group + share_foreign_background + share_postsecondary_parents + 
                      share_active_certified_teachers + private_ownership + share_female_students), 
-  data = school_data_betyg, model = "within", effect = "individual")
+  data = school_data_betyg)
 
-dynamic_DiD_summary <- summary(dynamic_DiD) # Storing the results
+# Storing the results
+dynamic_DiD_summary <- summary(dynamic_DiD) 
 
-## with plm, slightly different
-dynamic_DiD_clustered_se <- sqrt(diag(plm::vcovHC(dynamic_DiD, type = "HC1", cluster="group")))
-
+# Clustered Standard Errors
+dynamic_DID_clustered_se <- sqrt(diag(vcovCL(dynamic_DiD, cluster = ~ school_municipality)))  
 
 # Order of Coefficients for the event study plot
-plot_order <- c('academic_year2016/17:treatment_group', 
+plot_order <- c('academic_year2015/16:treatment_group', 
+                'academic_year2016/17:treatment_group', 
                 'academic_year2017/18:treatment_group', 
-                'academic_year2019/20:treatment_group',
-                'academic_year2020/21:treatment_group', 
-                'academic_year2021/22:treatment_group') 
+                'academic_year2019/20:treatment_group') 
 
 # Extracting Coefficients and Using Clustered Standard Errors
 dynamic_DiD_results_clustered <- tibble(
   estimates = c(dynamic_DiD_summary$coefficients[plot_order, "Estimate"], 0),
-  standard_errors = c(dynamic_DiD_clustered_se[plot_order], 0),  # Use clustered SEs
-  label = c(-3, -2, 0, 1, 2, -1)
+  standard_errors = c(dynamic_DID_clustered_se[plot_order], 0),
+  label = c(-4, -3, -2, 0, -1)
 )
 
 dynamic_did_plot <- ggplot(data = dynamic_DiD_results_clustered,  
@@ -237,21 +234,113 @@ output_file_betyg <- file.path(path_output_betyg, "dynamic_did_plot.png")
 # Save the plot
 ggsave(output_file_betyg, dynamic_did_plot, bg = "transparent", width=6, height=3)
 
+#
+#
+#
+#
 
+# -- Difference-in-Difference Estimation -- #
 
+# Step 1 Estimate model with default standard errors
+# Step 2 Construct clustered standard errors
 
+# Model 1 - Default DiD Model
+model_1 <- lm(average_grade_points ~ treatment_year + treatment_group + DiD, 
+              data = school_data_betyg)
 
+clustered_se_1 <- sqrt(diag(vcovCL(model_1, cluster = ~ school_municipality)))  # Clustered Standard Errors
 
+# Model 2 - Adding share_postsecondary_parents
+model_2 <- lm(average_grade_points ~ treatment_year + treatment_group + DiD +
+                share_postsecondary_parents, 
+              data = school_data_betyg)
 
+clustered_se_2 <- sqrt(diag(vcovCL(model_2, cluster = ~ school_municipality)))  # Clustered Standard Errors
 
+# Model 3 - Adding share_foreign_background
+model_3 <- lm(average_grade_points ~ treatment_year + treatment_group + DiD + 
+                share_postsecondary_parents + share_foreign_background, 
+              data = school_data_betyg)
 
+clustered_se_3 <- sqrt(diag(vcovCL(model_3, cluster = ~ school_municipality)))  # Clustered Standard Errors
 
+# Model 4 - Adding share_active_certified_teachers
+model_4 <- lm(average_grade_points ~ treatment_year + treatment_group + DiD + 
+                share_postsecondary_parents + share_foreign_background + share_active_certified_teachers, 
+              data = school_data_betyg)
 
+clustered_se_4 <- sqrt(diag(vcovCL(model_4, cluster = ~ school_municipality)))  # Clustered Standard Errors
 
+# Model 5 - Adding type_of_principal
+model_5 <- lm(average_grade_points ~ treatment_year + treatment_group + DiD + 
+                share_postsecondary_parents + share_foreign_background + share_active_certified_teachers + 
+                private_ownership, 
+              data = school_data_betyg)
 
+clustered_se_5 <- sqrt(diag(vcovCL(model_5, cluster = ~ school_municipality)))  # Clustered Standard Errors
 
+# Model 6 - Adding shares of female students
+model_6 <- lm(average_grade_points ~ treatment_year + treatment_group + DiD + 
+                share_postsecondary_parents + share_foreign_background + share_active_certified_teachers + 
+                private_ownership + share_female_students, 
+              data = school_data_betyg)
 
+clustered_se_6 <- sqrt(diag(vcovCL(model_6, cluster = ~ school_municipality)))  # Clustered Standard Errors
 
+# School Fixed Effects
+model_7 <- plm(
+  average_grade_points ~ treatment_year + treatment_group + DiD + 
+    share_foreign_background + share_postsecondary_parents + share_active_certified_teachers + private_ownership + share_female_students, 
+  data = school_data_betyg, model = "within", effect = "individual")
+
+summary(model_7)
+
+robust_se_7 <- sqrt(diag(plm::vcovHC(model_7, type = "HC1")))
+
+# - Store Results - #
+
+# List of models
+models <- list(model_1, model_2, model_3, model_4, model_5, model_6)
+
+# List of robust standard errors 
+clustered_se_list <- list(clustered_se_1, clustered_se_2, clustered_se_3, clustered_se_4, clustered_se_5, clustered_se_6)
+
+#
+#
+
+# - Exporting Regression Output - # 
+
+# Use file.path() to ensure correct formatting of the file path
+output_file_betyg <- file.path(path_output_betyg, "regression_output.html")
+
+# Generate the Stargazer table dynamically
+stargazer::stargazer(
+  models,                      # Use the list of models
+  se = clustered_se_list,      # Use the list of clustered SEs
+  model.numbers = TRUE,
+  align = TRUE,
+  dep.var.caption = "",
+  dep.var.labels = "Average Grade Points",
+  # Update covariate.labels to include only the variables you want to display
+  covariate.labels = c("Upper Secondary x 2019/20", 
+                       "Share Postsecondary Parents", 
+                       "Share Foreign Background",  
+                       "Share Active Certified Teachers", 
+                       "Private Ownership", 
+                       "Share of Female Students"),
+  digits = 3,
+  omit = "treatment_year|treatment_group",  # Omit the first two variables by name
+  omit.stat = c("rsq", "adj.rsq", "ser", "f"),
+  add.lines = list(c("School Fixed Effects", "No", "No", "No", "No", "No", "No")),
+
+  # Changing the notes section
+  notes.append = FALSE, # Exclude default significance levels text
+  notes.label = "Note:", # Notes label
+  notes = "This table presents our DiD model estimates. Standard errors are clustered at the municipality level. Significance levels: * p<0.10, ** p<0.05, *** p<0.01",
+  # Output
+  type = 'html',
+  out = output_file_betyg      # Save the table as an HTML file
+)
 
 #
 #
@@ -382,21 +471,17 @@ ggsave(output_file_english, parallel_trend_plot, bg = "transparent", width=6, he
 school_data_english$academic_year <- relevel(school_data_english$academic_year, ref="2018/19")
 
 # Estimating the Dynamic DiD Model
-dynamic_DiD <- plm(
+dynamic_DiD <- lm(
   share_students_F_eng ~ 
     academic_year*(treatment_group + share_foreign_background + share_postsecondary_parents + 
                      share_active_certified_teachers + private_ownership + share_female_students), 
-  data = school_data_english, model = "within", effect = "individual")
+  data = school_data_english)
 
-dynamic_DiD_summary <- summary(dynamic_DiD) # Storing the results
+# Storing the results
+dynamic_DiD_summary <- summary(dynamic_DiD) 
 
-## with plm, slightly different
-robust_se_plm <- sqrt(diag(plm::vcovHC(dynamic_DiD, type = "HC1", cluster="group")))
-robust_se_plm
-
-cl_se_plm <- sqrt(diag(vcovHC(dynamic_DiD, type = "HC1",cluster="group")))
-cl_se_plm
-
+# Clustered Standard Errors
+dynamic_DID_clustered_se <- sqrt(diag(vcovCL(dynamic_DiD, cluster = ~ school_municipality)))  
 
 # Order of Coefficients for the event study plot
 plot_order <- c('academic_year2016/17:treatment_group', 
@@ -404,33 +489,33 @@ plot_order <- c('academic_year2016/17:treatment_group',
                 'academic_year2019/20:treatment_group')
 
 # Extracting Coefficients and Using Clustered Standard Errors
-dynamic_DiD_results_clustered <- tibble(
+dynamic_did_plot_table <- tibble(
   estimates = c(dynamic_DiD_summary$coefficients[plot_order, "Estimate"], 0),
-  standard_errors = c(dynamic_DiD_clustered_se[plot_order], 0),  # Use clustered SEs
+  standard_errors = c(dynamic_DID_clustered_se[plot_order], 0),  # Use clustered SEs
   label = c(-3, -2, 0, -1)
 )
 
-dynamic_did_plot <- ggplot(data = dynamic_DiD_results_clustered,  
+dynamic_did_plot <- ggplot(data = dynamic_did_plot_table,  
                            aes(x = label, y = estimates)) +
   geom_errorbar(aes(ymin = estimates - 1.96 * standard_errors, 
                     ymax = estimates + 1.96 * standard_errors), 
                 size = 0.5, width = 0.05, color = "black", alpha = 0.75) +  
   geom_point(shape = 18, size = 2.5, color = "black") + 
   xlab('Years before and after school closures') +
-  ylab('Average percent of students with F') +
+  ylab('Share of Student with F in English') +
   geom_hline(yintercept = 0, linetype = "solid", color = 'brown', alpha = 0.75) +  
-  geom_vline(xintercept = -0.5, linetype = "dashed") +
-  ylim(-0.6, 0.6) + 
+  geom_vline(xintercept = -0.5, linetype = "dashed") + 
+  ylim(-2, 2) + 
   my_theme
 
 # Print Dynamic DiD Plot
 print(dynamic_did_plot)
 
 # Use file.path() to ensure correct formatting of the file path
-output_file_swedish <- file.path(path_output_english, "dynamic_did_plot.png")
+output_file_english <- file.path(path_output_english, "dynamic_did_plot.png")
 
 # Save the plot
-ggsave(output_file_swedish, dynamic_did_plot, bg = "transparent", width=6, height=3)
+ggsave(output_file_english, dynamic_did_plot, bg = "transparent", width=6, height=3)
 
 #
 #
@@ -443,8 +528,6 @@ ggsave(output_file_swedish, dynamic_did_plot, bg = "transparent", width=6, heigh
 # Model 1 - Default DiD Model
 model_1 <- lm(share_students_F_eng ~ treatment_year + treatment_group + DiD, 
               data = school_data_english)
-
-summary(model_1)
 
 clustered_se_1 <- sqrt(diag(vcovCL(model_1, cluster = ~ school_municipality)))  # Clustered Standard Errors
 
@@ -483,6 +566,8 @@ model_6 <- lm(share_students_F_eng ~ treatment_year + treatment_group + DiD +
                 private_ownership + share_female_students, 
               data = school_data_english)
 
+summary(model_6)
+
 clustered_se_6 <- sqrt(diag(vcovCL(model_6, cluster = ~ school_municipality)))  # Clustered Standard Errors
 
 #
@@ -506,20 +591,38 @@ output_file_english <- file.path(path_output_english, "regression_output.html")
 
 # Generate the Stargazer table dynamically
 stargazer::stargazer(
-  models,  # Use the list of models
-  se = clustered_se_list,  # Use the list of clustered SEs
-  model.numbers = FALSE,
+  # Model estimates and standard errors
+  models,                      # Use the list of models
+  se = clustered_se_list,      # Use the list of clustered SEs
+  
+  # Top row modification 
+  model.numbers = TRUE,
   align = TRUE,
-  dep.var.caption = "Dependent variable: Y",
+  dep.var.caption = "",
   dep.var.labels = "Share of Students with F in English",
-  column.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5", "Model 6"),
-  covariate.labels = c("Treatment Year", "Treatment Group", "DiD",
-                       "Share Postsecondary Parents", "Share Foreign Background",  "Share Active Certified Teachers", 
-                       "Private Ownership", "Share of Female Students"),
+  
+  # Update covariate.labels to include only the variables you want to display
+  omit = "treatment_year|treatment_group",  # Omit the first two variables by name
+  covariate.labels = c("Upper Secondary x 2019/20", 
+                       "Share Postsecondary Parents", 
+                       "Share Foreign Background",  
+                       "Share Active Certified Teachers", 
+                       "Private Ownership", 
+                       "Share of Female Students"),
   digits = 3,
-  style = "aer",
+  
+  # Additional changes
+  add.lines = list(c("School Fixed Effects", "No", "No", "No", "No", "No", "No")),
+  omit.stat = c("rsq", "adj.rsq", "ser", "f"),
+  
+  # Changing the notes section
+  notes.append = FALSE, # Exclude default significance levels text
+  notes.label = "Note:", # Notes label
+  notes = "This table presents our DiD model estimates. Standard errors are clustered at the municipality level. Significance levels: * p<0.10, ** p<0.05, *** p<0.01",
+  
+  # Output
   type = 'html',
-  out = output_file_english  # Save the table as an HTML file
+  out = output_file_english      # Save the table as an HTML file
 )
 
 #
@@ -564,17 +667,20 @@ school_data_mathematics <- read_excel("school_data_ämnen.xlsx", sheet = "Mathem
 # Filter 
 school_data_mathematics <- school_data_mathematics %>%
   filter(school_size != '1-49') %>%
-  filter(academic_year != "2014/15", academic_year != "2015/16", academic_year != "2021/22") 
+  filter(academic_year != "2014/15", academic_year != "2015/16", academic_year != "2020/21", academic_year != "2021/22") 
 
 # Variable Modification
 school_data_mathematics <- school_data_mathematics %>%
   mutate(treatment_year = ifelse(academic_year == "2019/20", 1, 0), 
          treatment_group = ifelse(educational_stage == "gymnasieskola", 1, 0),
-         academic_year = as.factor(academic_year),
          DiD = treatment_year*treatment_group,
-         private_ownership = ifelse(type_of_ownership == "Enskild", 1, 0)
+         private_ownership = ifelse(type_of_ownership == "Enskild", 1, 0),
+         school_ID = as.factor(school_ID),
+         academic_year = as.factor(academic_year),
+         school_municipality = as.factor(school_municipality),
+         school_county = as.factor(school_municipality),
+         academic_year_spring = as.numeric(paste0("20", sub(".*/", "", academic_year)))
   )
-
 # Define the path to the output folder
 path_output_mathematics <- "/Users/andrescruz/Documents/Handelshögskolan/MSc Economic/Semester 4/5350 Thesis in Economics/Output/Mathematics/"
 
@@ -649,14 +755,13 @@ dynamic_DiD_clustered_se <- sqrt(diag(vcovCL(dynamic_DiD, cluster = ~ school_mun
 # Order of Coefficients for the event study plot
 plot_order <- c('academic_year2016/17:treatment_group', 
                 'academic_year2017/18:treatment_group', 
-                'academic_year2019/20:treatment_group',
-                'academic_year2020/21:treatment_group')
+                'academic_year2019/20:treatment_group')
 
 # Extracting Coefficients and Using Clustered Standard Errors
 dynamic_DiD_results_clustered <- tibble(
   estimates = c(dynamic_DiD_summary$coefficients[plot_order, "Estimate"], 0),
   standard_errors = c(dynamic_DiD_clustered_se[plot_order], 0),  # Use clustered SEs
-  label = c(-3, -2, 0, 1, -1)
+  label = c(-3, -2, 0, -1)
 )
 
 dynamic_did_plot <- ggplot(data = dynamic_DiD_results_clustered,  
@@ -666,10 +771,10 @@ dynamic_did_plot <- ggplot(data = dynamic_DiD_results_clustered,
                 size = 0.5, width = 0.05, color = "black", alpha = 0.75) +  
   geom_point(shape = 18, size = 2.5, color = "black") + 
   xlab('Years before and after school closures') +
-  ylab('Average percent of students with F') +
+  ylab('Average percent of students with F Mathematics') +
   geom_hline(yintercept = 0, linetype = "solid", color = 'brown', alpha = 0.75) +  
   geom_vline(xintercept = -0.5, linetype = "dashed") +
-  ylim(-6,6) + 
+  ylim(-2,2) + 
   my_theme
 
 # Print Dynamic DiD Plot
@@ -731,6 +836,7 @@ model_6 <- lm(share_students_F_ma ~ treatment_year + treatment_group + DiD +
                 private_ownership + share_female_students, 
               data = school_data_mathematics)
 
+summary(model_6)
 clustered_se_6 <- sqrt(diag(vcovCL(model_6, cluster = ~ school_municipality)))  # Clustered Standard Errors
 
 #
@@ -754,20 +860,38 @@ output_file_mathematics <- file.path(path_output_mathematics, "regression_output
 
 # Generate the Stargazer table dynamically
 stargazer::stargazer(
-  models,  # Use the list of models
-  se = clustered_se_list,  # Use the list of clustered SEs
-  model.numbers = FALSE,
+  # Model estimates and standard errors
+  models,                      # Use the list of models
+  se = clustered_se_list,      # Use the list of clustered SEs
+  
+  # Top row modification 
+  model.numbers = TRUE,
   align = TRUE,
-  dep.var.caption = "Dependent variable: Y",
-  dep.var.labels = "Share of Students with F in Mathematics",
-  column.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5", "Model 6"),
-  covariate.labels = c("Treatment Year", "Treatment Group", "DiD",
-                       "Share Postsecondary Parents", "Share Foreign Background",  "Share Active Certified Teachers", 
-                       "Private Ownership", "Share of Female Students"),
+  dep.var.caption = "",
+  dep.var.labels = "Share of Students with F in Mathemathics",
+  
+  # Update covariate.labels to include only the variables you want to display
+  omit = "treatment_year|treatment_group",  # Omit the first two variables by name
+  covariate.labels = c("Upper Secondary x 2019/20", 
+                       "Share Postsecondary Parents", 
+                       "Share Foreign Background",  
+                       "Share Active Certified Teachers", 
+                       "Private Ownership", 
+                       "Share of Female Students"),
   digits = 3,
-  style = "aer",
+  
+  # Additional changes
+  add.lines = list(c("School Fixed Effects", "No", "No", "No", "No", "No", "No")),
+  omit.stat = c("rsq", "adj.rsq", "ser", "f"),
+  
+  # Changing the notes section
+  notes.append = FALSE, # Exclude default significance levels text
+  notes.label = "Note:", # Notes label
+  notes = "This table presents our DiD model estimates. Standard errors are clustered at the municipality level. Significance levels: * p<0.10, ** p<0.05, *** p<0.01",
+  
+  # Output
   type = 'html',
-  out = output_file_mathematics  # Save the table as an HTML file
+  out = output_file_mathematics      # Save the table as an HTML file
 )
 
 #
@@ -814,16 +938,20 @@ school_data_swedish <- read_excel("school_data_ämnen.xlsx", sheet = "Swedish")
 # Filter 
 school_data_swedish <- school_data_swedish %>%
   filter(school_size != '1-49') %>%
-  filter(academic_year != "2014/15", academic_year != "2015/16", academic_year != "2021/22") 
+  filter(academic_year != "2014/15", academic_year != "2015/16", academic_year != "2020/21", academic_year != "2021/22") 
 
 # Variable Modification
 school_data_swedish <- school_data_swedish %>%
   mutate(treatment_year = ifelse(academic_year == "2019/20", 1, 0), 
          treatment_group = ifelse(educational_stage == "gymnasieskola", 1, 0),
-         academic_year = as.factor(academic_year),
          DiD = treatment_year*treatment_group,
-         private_ownership = ifelse(type_of_ownership == "Enskild", 1, 0)
-         )
+         private_ownership = ifelse(type_of_ownership == "Enskild", 1, 0),
+         school_ID = as.factor(school_ID),
+         academic_year = as.factor(academic_year),
+         school_municipality = as.factor(school_municipality),
+         school_county = as.factor(school_municipality),
+         academic_year_spring = as.numeric(paste0("20", sub(".*/", "", academic_year)))
+  )
 
 # Define the path to the output folder
 path_output_swedish <- "/Users/andrescruz/Documents/Handelshögskolan/MSc Economic/Semester 4/5350 Thesis in Economics/Output/Swedish/"
@@ -899,14 +1027,13 @@ dynamic_DiD_clustered_se <- sqrt(diag(vcovCL(dynamic_DiD, cluster = ~ school_mun
 # Order of Coefficients for the event study plot
 plot_order <- c('academic_year2016/17:treatment_group', 
                 'academic_year2017/18:treatment_group', 
-                'academic_year2019/20:treatment_group',
-                'academic_year2020/21:treatment_group')
+                'academic_year2019/20:treatment_group')
 
 # Extracting Coefficients and Using Clustered Standard Errors
 dynamic_DiD_results_clustered <- tibble(
   estimates = c(dynamic_DiD_summary$coefficients[plot_order, "Estimate"], 0),
   standard_errors = c(dynamic_DiD_clustered_se[plot_order], 0),  # Use clustered SEs
-  label = c(-3, -2, 0, 1, -1)
+  label = c(-3, -2, 0, -1)
 )
 
 dynamic_did_plot <- ggplot(data = dynamic_DiD_results_clustered,  
@@ -916,7 +1043,7 @@ dynamic_did_plot <- ggplot(data = dynamic_DiD_results_clustered,
                 size = 0.5, width = 0.05, color = "black", alpha = 0.75) +  
   geom_point(shape = 18, size = 2.5, color = "black") + 
   xlab('Years before and after school closures') +
-  ylab('Average percent of students with F') +
+  ylab('Average percent of students with F Swedish') +
   geom_hline(yintercept = 0, linetype = "solid", color = 'brown', alpha = 0.75) +  
   geom_vline(xintercept = -0.5, linetype = "dashed") +
   ylim(-2,2) +
@@ -1004,18 +1131,37 @@ output_file_swedish <- file.path(path_output_swedish, "regression_output.html")
 
 # Generate the Stargazer table dynamically
 stargazer::stargazer(
-  models,  # Use the list of models
-  se = clustered_se_list,  # Use the list of clustered SEs
-  model.numbers = FALSE,
+  # Model estimates and standard errors
+  models,                      # Use the list of models
+  se = clustered_se_list,      # Use the list of clustered SEs
+  
+  # Top row modification 
+  model.numbers = TRUE,
   align = TRUE,
-  dep.var.caption = "Dependent variable: Y",
+  dep.var.caption = "",
   dep.var.labels = "Share of Students with F in Swedish",
-  column.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5", "Model 6"),
-  covariate.labels = c("Treatment Year", "Treatment Group", "DiD",
-                       "Share Postsecondary Parents", "Share Foreign Background",  "Share Active Certified Teachers", 
-                       "Private Ownership", "Share of Female Students"),
+  
+  # Update covariate.labels to include only the variables you want to display
+  omit = "treatment_year|treatment_group",  # Omit the first two variables by name
+  covariate.labels = c("Upper Secondary x 2019/20", 
+                       "Share Postsecondary Parents", 
+                       "Share Foreign Background",  
+                       "Share Active Certified Teachers", 
+                       "Private Ownership", 
+                       "Share of Female Students"),
   digits = 3,
-  style = "aer",
+  
+  # Additional changes
+  add.lines = list(c("School Fixed Effects", "No", "No", "No", "No", "No", "No")),
+  omit.stat = c("rsq", "adj.rsq", "ser", "f"),
+  
+  # Changing the notes section
+  notes.append = FALSE, # Exclude default significance levels text
+  notes.label = "Note:", # Notes label
+  notes = "This table presents our DiD model estimates. Standard errors are clustered at the municipality level. Significance levels: * p<0.10, ** p<0.05, *** p<0.01",
+  
+  # Output
   type = 'html',
-  out = output_file_swedish  # Save the table as an HTML file
+  out = output_file_swedish      # Save the table as an HTML file
 )
+
