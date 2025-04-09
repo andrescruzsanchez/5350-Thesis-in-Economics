@@ -106,7 +106,7 @@ my_theme <- theme(
 
 # CHANGE LANGUAGE HERE
 # "English" (eng), "Swedish" (sv), or "Mathematics" (ma)
-language <- "Swedish"
+language <- "English"
 
 # Reading school data excel file and importing sheet based on language variable
 school_data <- read_excel("school_data_ämnen.xlsx", sheet = language)
@@ -119,8 +119,8 @@ school_data <- school_data %>%
   
   # CHANGE LANGUAGE HERE
   # "English" (eng), "Swedish" (sv), or "Mathematics" (ma)
-  rename(share_students_F = share_students_F_sv,
-         share_students_A_E = share_students_A_E_sv) %>%
+  rename(share_students_F = share_students_F_eng,
+         share_students_A_E = share_students_A_E_eng) %>%
   
   # Drop unused variable
   select(-share_students_A_E) %>%
@@ -817,6 +817,10 @@ sensitivity_plot_rm <- HonestDiD::createSensitivityPlot_relativeMagnitudes(delta
   my_theme
 sensitivity_plot_rm
 
+# Save the plot using a dynamic file name
+output_file <- file.path(path_output, paste0("rm_plot_", language, ".png"))
+ggsave(output_file, sensitivity_plot_rm, bg = 'transparent', dpi = 1800)
+
 #
 #
 
@@ -829,7 +833,7 @@ delta_sd_results <-
     sigma = sigma,
     numPrePeriods = 4,
     numPostPeriods = 1,
-    Mvec = seq(from = 0, to = 0.1, by = 0.01)
+    Mvec = seq(from = 0, to = 0.05, by = 0.01)
   )
 
 # Sensitivity Plot
@@ -838,6 +842,10 @@ sensitivity_plot_with_sm <- sensitivity_plot_with_sm +
   scale_color_manual(values = c("black", "darkgrey")) + 
   my_theme
 sensitivity_plot_with_sm
+
+# Save the plot using a dynamic file name
+output_file <- file.path(path_output, paste0("sm_plot_", language, ".png"))
+ggsave(output_file, sensitivity_plot_with_sm, bg = 'transparent', dpi = 1800)
 
 
 #
@@ -865,7 +873,7 @@ skolenkäten <- skolenkäten %>%
 # 14. Elevhälsa
 
 # Define question to analyze
-question_to_analyze <- "Q14"  # Change this to Q2, Q11, Q12, Q14 as needed
+question_to_analyze <- "Q2"  # Change this to Q2, Q11, Q12, Q14 as needed
 
 # Create the plot dynamically
 question_plot <- ggplot(skolenkäten, 
