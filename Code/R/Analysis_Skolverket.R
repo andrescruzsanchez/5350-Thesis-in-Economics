@@ -21,6 +21,9 @@ cat("\014")
 # Set working directory
 setwd("~/Documents/Handelshögskolan/MSc Economic/Semester 4/5350 Thesis in Economics/Processed Data")
 
+# Source Customed Themes  
+source("/Users/andrescruz/Documents/Handelshögskolan/MSc Economic/Semester 4/5350 Thesis in Economics/Code/R/themes.R")
+
 # Loading packages 
 library(tidyverse)
 library(haven)
@@ -45,51 +48,9 @@ library(HonestDiD)
 
 # Special package for sensitivity analysis
 # Turn off warning-error-conversion, because the tiniest warning stops installation
-Sys.setenv("R_REMOTES_NO_ERRORS_FROM_WARNINGS" = "true")
+# Sys.setenv("R_REMOTES_NO_ERRORS_FROM_WARNINGS" = "true")
 # Install HonestDiD from github
-remotes::install_github("asheshrambachan/HonestDiD")
-
-#
-#
-#
-#
-#
-#
-#
-#
-
-# -------- Design for Plots -------- #
-
-# My Theme For Plots
-my_theme <- theme(
-  
-  # Customize legend text, position, and background.
-  legend.text = element_text(size = 7),
-  legend.title = element_blank(),
-  legend.position = "bottom",  # Move legend below the graph
-  legend.direction = "horizontal",  # Arrange legend items side by side
-  legend.background = element_rect(fill='transparent'),
-  legend.key = element_blank(),  # This one removes the background behind each key in the legend
-  
-  # Adjust axis parameters such as size and color.
-  axis.text = element_text(size = 7, color = "black"),
-  axis.title = element_text(size = 7, color = "black"),
-  axis.ticks = element_line(colour = "black", size = 0.25),
-  axis.title.y = element_text(vjust = +3),
-  axis.title.x = element_text(vjust = -3),
-  
-  # Axis lines are now lighter than default
-  axis.line = element_line(colour = "black", size = 0.25),
-  
-  # Only keep y-axis major grid lines, with a grey color and dashed type.
-  panel.grid.minor = element_blank(),
-  panel.grid.major.x = element_blank(),
-  panel.grid.major.y = element_line(color = 'lightgrey', linetype ="solid", size = 0.25),
-  
-  # Use a light color for the background of the plot and the panel.
-  panel.background = element_rect(fill = 'transparent'),
-  plot.background = element_rect(fill = 'transparent', color = NA)
-)
+#remotes::install_github("asheshrambachan/HonestDiD")
 
 #
 #
@@ -106,7 +67,7 @@ my_theme <- theme(
 
 # CHANGE LANGUAGE HERE
 # "English" (eng), "Swedish" (sv), or "Mathematics" (ma)
-language <- "English"
+language <- "Swedish"
 
 # Reading school data excel file and importing sheet based on language variable
 school_data <- read_excel("school_data_ämnen.xlsx", sheet = language)
@@ -119,8 +80,8 @@ school_data <- school_data %>%
   
   # CHANGE LANGUAGE HERE
   # "English" (eng), "Swedish" (sv), or "Mathematics" (ma)
-  rename(share_students_F = share_students_F_eng,
-         share_students_A_E = share_students_A_E_eng) %>%
+  rename(share_students_F = share_students_F_sv,
+         share_students_A_E = share_students_A_E_sv) %>%
   
   # Drop unused variable
   select(-share_students_A_E) %>%
@@ -231,9 +192,9 @@ matched_object <- matchit(
   distance = 'glm',
   link = 'logit',            # Estimating propensity scores using logistic regression (default)
   m.order = "largest",       # Start matching with treated units that have the highest propensity scores (not default)
-  ratio = 1,                 # Match each treated unit to 1 control (default)
-  replace = FALSE,           # Not allowing to reuse of control units (default)
-  exact = ~private_ownership # Match only within private/public school and for each academic year
+  ratio = 1,                 # Match each treated unit to 2 control (default)
+  replace = TRUE,           # Not allowing to reuse of control units (default)
+  exact = ~private_ownership + school_municipality # Match only within private/public school and within each municipality
 )
 
 # Checking balance after NN matching
@@ -242,7 +203,15 @@ summary(matched_object, un = FALSE)
 print(matched_object)
 
 # Love Plot
-love_plot <- love.plot(matched_object) +
+love_plot <- love.plot(matched_object, 
+                       var.names = c("distance" = "Distance", 
+                                     "graduates_average_grade_points" = "Average Grade Points",
+                                     "private_ownership" = "Private Ownership",
+                                     "share_active_certified_teachers" = "Proportion of Active Certified Teachers",
+                                     "share_postsecondary_parents" = "Proportion of Students with Postsecondary Parents", 
+                                     "share_foreign_background" = "Proportion of Students with Foreign Background",
+                                     "share_female_students" = "Proportion of Female Students"
+                                     )) +
   scale_color_manual(values = c("Unadjusted" = "darkgrey", "Adjusted" = "black")) +
   labs(title = NULL) +
   my_theme
@@ -250,12 +219,22 @@ love_plot
 
 # Save the plot using a dynamic file name
 output_file <- file.path(path_output, paste0("love_plot_", language, ".png"))
-ggsave(output_file, love_plot, bg = 'transparent', dpi = 1800)
+ggsave(output_file, love_plot, bg = 'transparent', width = 5, height = 3)
 
 # Histogram
 histogram_plots <- plot(matched_object, type='hist') 
 histogram_plots
-# EXPORT MANUALLY 
+
+# Saving Histogram
+# Define the dynamic output file name.
+output_file <- file.path(path_output, paste0("histogram_plot_", language, ".png"))
+# Open a PNG device.
+# Open a PNG device with your desired dimensions.
+png(filename = output_file)
+# Reproduce the histogram plot.
+plot(matched_object, type = 'hist')
+# Close the device to complete the saving process.
+dev.off()
 
 # - Convert matched object to data set - 
 school_data_matched <- match.data(matched_object)
@@ -352,21 +331,21 @@ box_plot <- ggplot(
     outlier.size = 1) + 
   
   labs(
-    title = "Boxplot of Share of Students with F - Balanced",
+    title = NULL,
     x = NULL,  # Optional: removes the axis title (since labels make it clear)
     y = "Share of Students with F") +
   
   scale_x_discrete(
     labels = c(
-      "grundskola" = "Lower Secondary School Year 9",
-      "gymnasieskola" = "Upper Secondary School Year 10"))
+      "grundskola" = "Lower Secondary, Grade 9",
+      "gymnasieskola" = "Upper Secondary, Grade 10"))
 
 # Print the plot
 box_plot
 
 # Save the plot using a dynamic file name
 output_file <- file.path(path_output, paste0("box_plot_", language, ".png"))
-ggsave(output_file, box_plot, bg = 'transparent', dpi = 1800)
+ggsave(output_file, box_plot, bg = 'transparent', width = 4, height = 3)
 
 #
 #
@@ -403,42 +382,19 @@ time_trend <- school_data %>%
   summarise(average_share_students_F = mean(share_students_F))
 
 # Plot the Time Trend for each educational stage
-parallel_trend_plot <- ggplot(time_trend, 
-                              mapping = aes(x = academic_year_spring, y = average_share_students_F, 
-                                            group = educational_stage, color = educational_stage, shape = educational_stage)) + 
-  
-  # Vertical reference line
-  geom_vline(xintercept = 19.5, linetype = "solid", color = "brown1", size = 0.25) +
-  
-  # Data lines and points
-  geom_line(size = 0.25) +
-  geom_point(size = 1) +
-  
-  # Custom color and shape assignments
-  scale_color_manual(values = c("grundskola" = "darkgrey", "gymnasieskola" = "black"),
-                     labels = c("grundskola" = "Lower Secondary, Grade 9", 
-                                "gymnasieskola" = "Upper Secondary, Grade 10")) + 
-  scale_shape_manual(values = c("grundskola" = 21, "gymnasieskola" = 21),
-                     labels = c("grundskola" = "Lower Secondary, Grade 9", 
-                                "gymnasieskola" = "Upper Secondary, Grade 10")) +
-  
-  # Custom x-axis with manually specified breaks and labels
-  scale_x_continuous(breaks = c(15, 16, 17, 18, 19, 20, 21, 22),
-                     labels = c("14/15", "15/16", "16/17", "17/18", "18/19", "19/20", "20/21", "21/22")) +
-  
-  # Axis labels and y-axis limits
-  xlab("Academic Year") +
-  ylab("Average percent of students with F") +
-  
-  # Custom theme
+time_trend_plot <- ggplot(time_trend, mapping = aes(x = academic_year_spring, y = average_share_students_F, 
+                                                    group = educational_stage, color = educational_stage, shape = educational_stage)) + 
+  # Time Trend Theme
+  time_trend_theme + 
+  # My_theme
   my_theme
 
 # Print the plot
-print(parallel_trend_plot)
+print(time_trend_plot)
 
 # Save the plot using a dynamic file name
-output_file <- file.path(path_output, paste0("average_did_plot_", language, ".png"))
-ggsave(output_file, parallel_trend_plot, bg = 'transparent', dpi = 1800)
+output_file <- file.path(path_output, paste0("time_trend_plot_", language, ".png"))
+ggsave(output_file, time_trend_plot, width = 4, height = 3)
 
 #
 #
@@ -504,7 +460,7 @@ keep_vars <- paste(c(keep_interactions, additional_vars), collapse = "|")
 covariate_labels <- c("Foreign Background", "Active Certified Teachers", "Postsecondary Parents", "Female Students", "Year -5", "Year -4", "Year -3", "Year -2", "Year 0", "Year 1", "Year 2")
 
 # Save the table to a dynamic file name
-output_file <- file.path(path_output, paste0("dynamic_did_output_", language, ".html"))
+output_file <- file.path(path_output, paste0("dynamic_did_output_", language, ".text"))
 
 # Stargazer
 stargazer::stargazer(
@@ -553,7 +509,7 @@ stargazer::stargazer(
   notes = "The academic year 2018/19 is the reference year. Errors are clustered at the school level. Significance levels: * p<0.10, ** p<0.05, *** p<0.01",
   
   # Output settings
-  type = 'html',
+  type = 'latex',
   out = output_file
 )
 
@@ -596,28 +552,9 @@ combined_results <- combined_results %>%
 
 # Create the event study plot with overlaid results
 dynamic_did_plot <- ggplot(data = combined_results, aes(x = label, y = estimates, color = model, shape = model, group = model)) +
-  
-  # Bottom Layer: Horizontal reference line
-  geom_hline(yintercept = 0, linetype = "solid", color = 'brown1', size = 0.25) +
-  
-  # Middle Layer: Error bars (dodged to avoid complete overlap)
-  geom_errorbar(aes(ymin = estimates - 1.96 * standard_errors, 
-                    ymax = estimates + 1.96 * standard_errors), 
-                size = 0.25, width = 0.05, position = position_dodge(width = 0.2)) +
-  
-  # Top Layer: Points (also dodged)
-  geom_point(size = 1, position = position_dodge(width = 0.2)) +
-  
-  # Axis labels and limits
-  xlab('Years before and after spring 2020 school closures') +
-  ylab('Academic Year x Upper Secondary') +
-  scale_x_continuous(breaks = c(-5, -4, -3, -2, -1, 0, 1, 2)) +
-  
-  # Manually set colors and shapes for each model group
-  scale_color_manual(values = c("Without Controls" = "darkgrey", "With Controls" = "black")) +
-  scale_shape_manual(values = c("Without Controls" = 0, "With Controls" = 5)) +
-  
-  # Use your custom theme
+  # Dynamic Did Theme
+  dynamic_did_theme + 
+  # My Theme
   my_theme
 
 # Print the combined plot
@@ -625,7 +562,7 @@ print(dynamic_did_plot)
 
 # Save the plot using a dynamic file name
 output_file <- file.path(path_output, paste0("dynamic_did_plot_", language, ".png"))
-ggsave(output_file, dynamic_did_plot, bg = 'transparent', dpi = 1800)
+ggsave(output_file, dynamic_did_plot, width = 4, height = 3)
 
 #
 #
@@ -698,7 +635,7 @@ covariate_labels <- c("Grade 10 x Post",
 
 
 # Save the table to a dynamic file name
-output_file <- file.path(path_output, paste0("canonical_did_output_", language, ".html"))
+output_file <- file.path(path_output, paste0("canonical_did_output_", language, ".tex"))
 
 # Static Difference-in-Differences Table Output
 stargazer::stargazer(
@@ -710,7 +647,7 @@ stargazer::stargazer(
   se = DiD_rse,     
   
   # Title
-  title = "Static Difference-in-Difference Models",
+  title = "Canonical Difference-in-Difference Models with Multiple Time Periods",
   
   # Table Formatting 
   model.numbers = TRUE,
@@ -746,7 +683,7 @@ stargazer::stargazer(
   notes = "Errors are clustered at the school level. Significance levels: * p<0.10, ** p<0.05, *** p<0.01",
   
   # Output
-  type = 'html',
+  type = 'latex',
   out = output_file
 )
 
@@ -811,100 +748,32 @@ originalResults <- HonestDiD::constructOriginalCS(
   numPostPeriods = 1
 )
 
+my_labeller <- labeller(method = c("Original" = "Baseline", "C-LF" = "Custom"))
+
 # Sensitivity Plot
 sensitivity_plot_rm <- HonestDiD::createSensitivityPlot_relativeMagnitudes(delta_rm_results, originalResults) + 
+  # Changing colors for each group
   scale_color_manual(values = c("black", "darkgrey")) + 
+  # Add a geom_ribbon layer for shading the error intervals
+  geom_ribbon(aes(x = Mbar, ymin = lb[,1], ymax = ub[,1]),
+              fill = "lightgrey", alpha = 0.25, inherit.aes = TRUE) + 
+  # Adding my theme
   my_theme
+
+# More customization 
+# Vertical M Lines
+sensitivity_plot_rm$layers[[1]]$geom_params$width <- 0.05
+sensitivity_plot_rm$layers[[1]]$geom_params$size <- 0.25
+# Horizontal Zero Line
+sensitivity_plot_rm$layers[[2]]$aes_params$linetype <- "solid"
+sensitivity_plot_rm$layers[[2]]$geom_params$size <- 0.25
+sensitivity_plot_rm$layers[[2]]$aes_params$colour <- "brown1"
+# Print Results
 sensitivity_plot_rm
 
 # Save the plot using a dynamic file name
 output_file <- file.path(path_output, paste0("rm_plot_", language, ".png"))
-ggsave(output_file, sensitivity_plot_rm, bg = 'transparent', dpi = 1800)
-
-#
-#
-
-# -- Sensitivity Analysis Using Smoothness Bounds -- #
-
-# Delta SD
-delta_sd_results <-
-  HonestDiD::createSensitivityResults(
-    betahat = betahat,
-    sigma = sigma,
-    numPrePeriods = 4,
-    numPostPeriods = 1,
-    Mvec = seq(from = 0, to = 0.05, by = 0.01)
-  )
-
-# Sensitivity Plot
-sensitivity_plot_with_sm <- createSensitivityPlot(delta_sd_results, originalResults) 
-sensitivity_plot_with_sm <- sensitivity_plot_with_sm + 
-  scale_color_manual(values = c("black", "darkgrey")) + 
-  my_theme
-sensitivity_plot_with_sm
-
-# Save the plot using a dynamic file name
-output_file <- file.path(path_output, paste0("sm_plot_", language, ".png"))
-ggsave(output_file, sensitivity_plot_with_sm, bg = 'transparent', dpi = 1800)
-
-
-#
-#
-#
-#
-#
-#
-#
-#
-
-# -------- Skolenkäten --------  #
-
-# Load the data
-skolenkäten <- read_excel("skolenkäten.xlsx", sheet = 'Skolenkäten')
-
-# Ensure year_semester is an ordered factor for correct plotting
-skolenkäten <- skolenkäten %>%
-  mutate(year_semester = factor(year_semester, levels = unique(year_semester)))
-
-# Question of interest
-# 2. Stimulans
-# 11. Studiero
-# 12. Trygghet
-# 14. Elevhälsa
-
-# Define question to analyze
-question_to_analyze <- "Q2"  # Change this to Q2, Q11, Q12, Q14 as needed
-
-# Create the plot dynamically
-question_plot <- ggplot(skolenkäten, 
-                        aes_string(x = "year_semester", y = question_to_analyze, 
-                                   group = "educational_stage", 
-                                   color = "educational_stage", 
-                                   shape = "educational_stage")) +
-  
-  geom_vline(xintercept = 10, linetype = "solid", color = "brown1", size = 0.25) +
-  geom_line(size = 0.25) +
-  geom_point(size = 1) +
-
-  scale_color_manual(values = c("grundskola" = "darkgrey", "gymnasieskola" = "black"),
-                     labels = c("grundskola" = "Lower Secondary, Grade 9", 
-                                "gymnasieskola" = "Upper Secondary, Grade 11")) + 
-  scale_shape_manual(values = c("grundskola" = 21, "gymnasieskola" = 21),
-                     labels = c("grundskola" = "Lower Secondary, Grade 9", 
-                                "gymnasieskola" = "Upper Secondary, Grade 11")) +
-  
-  xlab("Academic Year Semester") +
-  ylab(paste("Indexvalue", question_to_analyze)) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
-  my_theme
-
-# Print the plot
-print(question_plot)
-
-# Save the plot with a dynamic file name
-path_output <- "~/Documents/Handelshögskolan/MSc Economic/Semester 4/5350 Thesis in Economics/Output/Skolenkäten"
-output_file <- file.path(path_output, paste0("Average_DiD_plot_", question_to_analyze, ".png"))
-ggsave(output_file, question_plot, bg = 'transparent', dpi = 1800)
+ggsave(output_file, sensitivity_plot_rm, width = 4, height = 3)
 
 
 

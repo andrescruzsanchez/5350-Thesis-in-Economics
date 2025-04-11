@@ -1,0 +1,56 @@
+
+% Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
+% Date and time: Thu, Apr 10, 2025 - 12:22:47
+% Requires LaTeX packages: dcolumn 
+\begin{table}[!htbp] \centering 
+  \caption{Dynamic Difference-in-Difference Models} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}}lD{.}{.}{-3} D{.}{.}{-3} } 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+\\[-1.8ex] & \multicolumn{2}{c}{Share of Students with F in Mathematics} \\ 
+ & \multicolumn{1}{c}{Unconditional} & \multicolumn{1}{c}{Conditional} \\ 
+\\[-1.8ex] & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)}\\ 
+\hline \\[-1.8ex] 
+ Foreign Background &  & 0.058^{***} \\ 
+  &  & (0.014) \\ 
+  & & \\ 
+ Active Certified Teachers &  & 0.002 \\ 
+  &  & (0.006) \\ 
+  & & \\ 
+ Postsecondary Parents &  & -0.054^{***} \\ 
+  &  & (0.018) \\ 
+  & & \\ 
+ Female Students &  & -0.002 \\ 
+  &  & (0.013) \\ 
+  & & \\ 
+ Year -5 & -0.300 & -0.096 \\ 
+  & (0.383) & (0.387) \\ 
+  & & \\ 
+ Year -4 & 1.455^{***} & 1.563^{***} \\ 
+  & (0.338) & (0.333) \\ 
+  & & \\ 
+ Year -3 & -1.376^{***} & -1.195^{***} \\ 
+  & (0.344) & (0.346) \\ 
+  & & \\ 
+ Year -2 & -0.566^{*} & -0.490 \\ 
+  & (0.335) & (0.330) \\ 
+  & & \\ 
+ Year 0 & -0.040 & -0.105 \\ 
+  & (0.323) & (0.320) \\ 
+  & & \\ 
+ Year 1 & 0.903^{***} & 0.885^{***} \\ 
+  & (0.324) & (0.319) \\ 
+  & & \\ 
+ Year 2 & -0.683^{**} & -0.741^{**} \\ 
+  & (0.339) & (0.336) \\ 
+  & & \\ 
+\hline \\[-1.8ex] 
+School Fixed Effects & No & Yes \\ 
+Time Fixed Effects & Yes & Yes \\ 
+Observations & \multicolumn{1}{c}{7,458} & \multicolumn{1}{c}{7,174} \\ 
+\hline 
+\hline \\[-1.8ex] 
+Note: & \multicolumn{2}{r}{The academic year 2018/19 is the reference year. Errors are clustered at the school level. Significance levels: * p<0.10, ** p<0.05, *** p<0.01} \\ 
+\end{tabular} 
+\end{table} 
