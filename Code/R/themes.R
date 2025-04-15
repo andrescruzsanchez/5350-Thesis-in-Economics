@@ -1,5 +1,6 @@
 # ------ 5350 Thesis in Economics ------ #             
 # ---- Andres Cruz (25199) and Klara Holmer (25037) ---- #
+# -- Themes -- #
 
 #
 #
@@ -10,7 +11,21 @@
 #
 #
 
-# -------- Design for alll Plots -------- #
+# -------- Initializing -------- #
+
+# Loading packages 
+library(ggplot2)
+
+#
+#
+#
+#
+#
+#
+#
+#
+
+# -------- Design for all Plots -------- #
 
 # My Theme For Plots
 my_theme <- theme(
@@ -41,7 +56,7 @@ my_theme <- theme(
   # Use a light color for the background of the plot and the panel.
   panel.background = element_rect(fill = 'white'),
   plot.background = element_rect(fill = 'white', color = NA)
-)
+  )
 
 #
 #

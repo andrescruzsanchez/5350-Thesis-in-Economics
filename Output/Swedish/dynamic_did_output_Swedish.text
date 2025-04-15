@@ -1,6 +1,6 @@
 
 % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-% Date and time: Fri, Apr 11, 2025 - 11:13:05
+% Date and time: Mon, Apr 14, 2025 - 11:32:57
 % Requires LaTeX packages: dcolumn 
 \begin{table}[!htbp] \centering 
   \caption{Dynamic Difference-in-Difference Models} 
@@ -12,43 +12,43 @@
  & \multicolumn{1}{c}{Unconditional} & \multicolumn{1}{c}{Conditional} \\ 
 \\[-1.8ex] & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)}\\ 
 \hline \\[-1.8ex] 
- Foreign Background &  & 0.022^{***} \\ 
-  &  & (0.008) \\ 
-  & & \\ 
- Active Certified Teachers &  & -0.003 \\ 
-  &  & (0.005) \\ 
-  & & \\ 
- Postsecondary Parents &  & -0.015 \\ 
+ Foreign Background &  & 0.014 \\ 
   &  & (0.010) \\ 
   & & \\ 
- Female Students &  & -0.001 \\ 
+ Active Certified Teachers &  & 0.002 \\ 
   &  & (0.006) \\ 
   & & \\ 
- Year -5 & 0.069 & 0.239 \\ 
-  & (0.314) & (0.297) \\ 
+ Postsecondary Parents &  & -0.044^{***} \\ 
+  &  & (0.013) \\ 
   & & \\ 
- Year -4 & 0.375 & 0.427 \\ 
-  & (0.286) & (0.292) \\ 
+ Female Students &  & 0.006 \\ 
+  &  & (0.008) \\ 
   & & \\ 
- Year -3 & -0.252 & -0.134 \\ 
-  & (0.306) & (0.303) \\ 
+ Year -5 & -0.031 & 0.066 \\ 
+  & (0.300) & (0.299) \\ 
   & & \\ 
- Year -2 & 0.077 & 0.073 \\ 
-  & (0.269) & (0.258) \\ 
+ Year -4 & 0.273 & 0.354 \\ 
+  & (0.280) & (0.278) \\ 
   & & \\ 
- Year 0 & -0.554^{*} & -0.490^{*} \\ 
-  & (0.287) & (0.273) \\ 
+ Year -3 & 0.088 & 0.162 \\ 
+  & (0.284) & (0.281) \\ 
   & & \\ 
- Year 1 & -0.311 & -0.320 \\ 
-  & (0.305) & (0.295) \\ 
+ Year -2 & 0.011 & 0.045 \\ 
+  & (0.249) & (0.248) \\ 
   & & \\ 
- Year 2 & -1.128^{***} & -1.195^{***} \\ 
-  & (0.324) & (0.310) \\ 
+ Year 0 & -0.512^{*} & -0.497^{*} \\ 
+  & (0.271) & (0.270) \\ 
+  & & \\ 
+ Year 1 & -0.260 & -0.236 \\ 
+  & (0.278) & (0.279) \\ 
+  & & \\ 
+ Year 2 & -1.050^{***} & -1.009^{***} \\ 
+  & (0.292) & (0.291) \\ 
   & & \\ 
 \hline \\[-1.8ex] 
 School Fixed Effects & No & Yes \\ 
 Time Fixed Effects & Yes & Yes \\ 
-Observations & \multicolumn{1}{c}{5,570} & \multicolumn{1}{c}{5,327} \\ 
+Observations & \multicolumn{1}{c}{4,448} & \multicolumn{1}{c}{4,448} \\ 
 \hline 
 \hline \\[-1.8ex] 
 Note: & \multicolumn{2}{r}{The academic year 2018/19 is the reference year. Errors are clustered at the school level. Significance levels: * p<0.10, ** p<0.05, *** p<0.01} \\ 
