@@ -1,6 +1,7 @@
 # ------ 5350 Thesis in Economics ------ #             
 # ---- Andres Cruz (25199) and Klara Holmer (25037) ---- #
-# -- Themes -- #
+
+# Creating Themes 
 
 #
 #
@@ -11,19 +12,6 @@
 #
 #
 
-# -------- Initializing -------- #
-
-# Loading packages 
-library(ggplot2)
-
-#
-#
-#
-#
-#
-#
-#
-#
 
 # -------- Design for all Plots -------- #
 
@@ -80,24 +68,24 @@ time_trend_theme <- list(
   # Custom color and shape assignments for grouping variables
   scale_color_manual(
     values = c("grundskola" = "darkgrey", "gymnasieskola" = "black"),
-    labels = c("grundskola" = "Lower Secondary, Grade 9", 
-               "gymnasieskola" = "Upper Secondary, Grade 10")
+    labels = c("grundskola" = "Grade 9", "gymnasieskola" = "Grade 10")
   ),
   scale_shape_manual(
-    values = c("grundskola" = 21, "gymnasieskola" = 21),
-    labels = c("grundskola" = "Lower Secondary, Grade 9", 
-               "gymnasieskola" = "Upper Secondary, Grade 10")
+    values = c("grundskola" = 21, "gymnasieskola" = 19),
+    labels = c("grundskola" = "Grade 9", "gymnasieskola" = "Grade 10")
   ),
   
   # Custom x-axis with specified breaks and labels
   scale_x_continuous(
     breaks = c(15, 16, 17, 18, 19, 20, 21, 22),
-    labels = c("14/15", "15/16", "16/17", "17/18", "18/19", "19/20", "20/21", "21/22")
+    labels = c("2014/15", "2015/16", "2016/17", "2017/18", "2018/19", "2019/20", "2020/21", "2021/22")
   ),
   
   # Axis labels
   xlab("Academic Year"),
-  ylab("Average percent of students with F")
+  ylab("Failure Rates (in %)"),
+  
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 )
 
 #
@@ -130,13 +118,17 @@ dynamic_did_theme <- list(
   geom_point(size = 1, position = position_dodge(width = 0.2)),
   
   # Axis labels and x-axis limits
-  xlab('Years before and after spring 2020 school closures'),
-  ylab('Academic Year x Grade 10'),
-  scale_x_continuous(breaks = c(-5, -4, -3, -2, -1, 0, 1, 2)),
+  xlab('Academic Year'),
+  ylab('Estimated Difference in Failure Rates Relative to Reference Year'),
+  scale_x_continuous(
+    breaks = c(-5, -4, -3, -2, -1, 0, 1),
+    labels = c("2014/15", "2015/16", "2016/17", "2017/18", "2018/19", "2019/20", "2020/21")),
   
   # Manually set colors and shapes for each model group
   scale_color_manual(values = c("Without Controls" = "darkgrey", 
                                 "With Controls" = "black")),
   scale_shape_manual(values = c("Without Controls" = 0, 
-                                "With Controls" = 5))
-)
+                                "With Controls" = 5)),
+  
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)))
+

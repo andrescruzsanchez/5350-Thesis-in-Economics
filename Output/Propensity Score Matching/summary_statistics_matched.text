@@ -1,0 +1,25 @@
+\begin{table}
+
+\caption{\label{tab:tab:mamatched_summary}Summary Statistics by Educational Level: Pre and Post Remote Instruction Periods}
+\centering
+\begin{tabular}[t]{lrrrr}
+\toprule
+Outcome / Count & Ctrl Pre & Ctrl Post & Trt Pre & Trt Post\\
+\midrule
+Failure Rates in Subject Swedish & 3.49 (4.14) & 4.01 (4.16) & 0.26 (0.98) & 0.29 (0.90)\\
+Failure Rates in Subject English & 6.69 (6.95) & 6.63 (6.61) & 0.32 (0.94) & 0.38 (1.11)\\
+Failure Rates in Subject Mathematics & 9.05 (8.35) & 8.71 (7.74) & 1.09 (2.17) & 1.32 (2.67)\\
+Foreign Background & 23.75 (16.65) & 26.08 (18.13) & 25.02 (17.38) & 28.83 (20.05)\\
+Active Certified Teachers & 73.29 (13.91) & 76.08 (13.22) & 81.11 (13.43) & 85.27 (11.89)\\
+\addlinespace
+Postsecondary Parents & 62.00 (16.86) & 64.80 (16.95) & 61.93 (12.51) & 64.78 (13.70)\\
+Female Students & 49.09 (5.52) & 49.29 (5.01) & 52.67 (14.77) & 53.34 (14.24)\\
+Public Schools & 750 & 300 & 750 & 300\\
+Private Schools & 455 & 182 & 455 & 182\\
+Public Schools & 150 & 150 & 150 & 150\\
+\addlinespace
+Private Schools & 91 & 91 & 91 & 91\\
+Observations & 1205 & 482 & 1205 & 482\\
+\bottomrule
+\end{tabular}
+\end{table}

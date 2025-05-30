@@ -1,0 +1,43 @@
+
+% Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
+% Date and time: Tue, May 27, 2025 - 14:43:24
+% Requires LaTeX packages: dcolumn 
+\begin{table}[!htbp] \centering 
+  \caption{Heterogeneous Effects} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}}lD{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} } 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{10}{c}{Failure Rates in Subject Swedish} \\ 
+\cline{2-11} 
+\\[-1.8ex] & \multicolumn{10}{c}{} \\ 
+ & \multicolumn{1}{c}{Private} & \multicolumn{1}{c}{Public} & \multicolumn{1}{c}{High Foreign Share} & \multicolumn{1}{c}{Low Foreign Share} & \multicolumn{1}{c}{High Postsecondary Share} & \multicolumn{1}{c}{Low Postsecondary Share} & \multicolumn{1}{c}{High Female Share} & \multicolumn{1}{c}{Low Female Share} & \multicolumn{1}{c}{High Teacher, Low Teacher Share} & \multicolumn{1}{c}{} \\ 
+\\[-1.8ex] & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} & \multicolumn{1}{c}{(8)} & \multicolumn{1}{c}{(9)} & \multicolumn{1}{c}{(10)}\\ 
+\hline \\[-1.8ex] 
+ 2014/15 x Grade 10 & 0.281 & 0.759 & -2.448^{*} & 0.785^{**} & 0.495 & 0.188 & 0.697 & 0.387 & 0.592 & 1.640 \\ 
+  & (0.563) & (0.468) & (1.391) & (0.367) & (0.358) & (1.036) & (0.706) & (0.513) & (0.388) & (2.578) \\ 
+  & & & & & & & & & & \\ 
+ 2015/16 x Grade 10 & 0.487 & 0.658 & -1.164 & 0.700^{**} & 0.416 & 0.452 & 1.666^{***} & -0.030 & 0.635^{*} & -0.786 \\ 
+  & (0.550) & (0.417) & (1.686) & (0.333) & (0.312) & (0.999) & (0.637) & (0.471) & (0.348) & (2.482) \\ 
+  & & & & & & & & & & \\ 
+ 2016/17 x Grade 10 & 0.206 & 0.419 & -0.644 & 0.424 & 0.110 & 0.269 & 0.924 & -0.046 & 0.393 & -0.223 \\ 
+  & (0.577) & (0.394) & (1.191) & (0.342) & (0.318) & (1.008) & (0.657) & (0.446) & (0.318) & (2.015) \\ 
+  & & & & & & & & & & \\ 
+ 2017/18 x Grade 10 & 0.246 & 0.233 & -0.177 & 0.302 & 0.268 & 0.065 & 0.708 & -0.024 & 0.197 & -0.445 \\ 
+  & (0.455) & (0.369) & (1.286) & (0.288) & (0.301) & (0.830) & (0.473) & (0.400) & (0.294) & (2.462) \\ 
+  & & & & & & & & & & \\ 
+ 2019/20 x Grade 10 & 0.020 & -0.120 & 0.030 & -0.044 & -0.003 & -0.691 & 0.713 & -0.685 & -0.117 & 0.270 \\ 
+  & (0.560) & (0.346) & (1.412) & (0.300) & (0.276) & (0.995) & (0.596) & (0.420) & (0.288) & (1.512) \\ 
+  & & & & & & & & & & \\ 
+ 2020/21 x Grade 10 & 0.266 & -0.591 & -0.463 & -0.241 & -0.183 & -1.062 & 0.988 & -1.118^{**} & -0.319 & -0.096 \\ 
+  & (0.563) & (0.413) & (1.387) & (0.340) & (0.331) & (1.091) & (0.602) & (0.447) & (0.328) & (1.650) \\ 
+  & & & & & & & & & & \\ 
+\hline \\[-1.8ex] 
+School Fixed Effects & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\ 
+Time Fixed Effects & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\ 
+Controls & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\ 
+Observations & \multicolumn{1}{c}{1,274} & \multicolumn{1}{c}{2,100} & \multicolumn{1}{c}{322} & \multicolumn{1}{c}{3,052} & \multicolumn{1}{c}{2,621} & \multicolumn{1}{c}{753} & \multicolumn{1}{c}{1,611} & \multicolumn{1}{c}{1,763} & \multicolumn{1}{c}{3,208} & \multicolumn{1}{c}{166} \\ 
+\hline 
+\hline \\[-1.8ex] 
+\end{tabular} 
+\end{table} 

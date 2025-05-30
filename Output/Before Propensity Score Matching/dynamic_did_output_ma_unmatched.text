@@ -1,0 +1,53 @@
+
+% Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
+% Date and time: Tue, May 27, 2025 - 14:46:56
+% Requires LaTeX packages: dcolumn 
+\begin{table}[!htbp] \centering 
+  \caption{Dynamic Difference-in-Difference Models} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}}lD{.}{.}{-3} D{.}{.}{-3} } 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{2}{c}{Failure Rates in Subject Mathematics} \\ 
+\cline{2-3} 
+\\[-1.8ex] & \multicolumn{2}{c}{} \\ 
+\\[-1.8ex] & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)}\\ 
+\hline \\[-1.8ex] 
+ Foreign Background &  & 0.114^{***} \\ 
+  &  & (0.019) \\ 
+  & & \\ 
+ Active Certified Teachers &  & -0.001 \\ 
+  &  & (0.007) \\ 
+  & & \\ 
+ Postsecondary Parents &  & -0.078^{***} \\ 
+  &  & (0.019) \\ 
+  & & \\ 
+ Female Students &  & 0.005 \\ 
+  &  & (0.015) \\ 
+  & & \\ 
+ 2014/15 x Grade 10 & 1.922^{***} & 2.172^{***} \\ 
+  & (0.309) & (0.315) \\ 
+  & & \\ 
+ 2015/16 x Grade 10 & 3.006^{***} & 3.241^{***} \\ 
+  & (0.272) & (0.277) \\ 
+  & & \\ 
+ 2016/17 x Grade 10 & -0.369 & -0.013 \\ 
+  & (0.274) & (0.280) \\ 
+  & & \\ 
+ 2017/18 x Grade 10 & 0.794^{***} & 0.949^{***} \\ 
+  & (0.260) & (0.262) \\ 
+  & & \\ 
+ 2019/20 x Grade 10 & 1.331^{***} & 1.348^{***} \\ 
+  & (0.261) & (0.261) \\ 
+  & & \\ 
+ 2020/21 x Grade 10 & 1.810^{***} & 1.836^{***} \\ 
+  & (0.272) & (0.273) \\ 
+  & & \\ 
+\hline \\[-1.8ex] 
+School Fixed Effects & Yes & Yes \\ 
+Time Fixed Effects & Yes & Yes \\ 
+Observations & \multicolumn{1}{c}{8,421} & \multicolumn{1}{c}{8,421} \\ 
+\hline 
+\hline \\[-1.8ex] 
+\end{tabular} 
+\end{table} 

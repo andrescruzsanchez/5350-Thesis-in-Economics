@@ -1,0 +1,53 @@
+
+% Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
+% Date and time: Tue, May 27, 2025 - 14:46:54
+% Requires LaTeX packages: dcolumn 
+\begin{table}[!htbp] \centering 
+  \caption{Dynamic Difference-in-Difference Models} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}}lD{.}{.}{-3} D{.}{.}{-3} } 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{2}{c}{Failure Rates in Subject Swedish} \\ 
+\cline{2-3} 
+\\[-1.8ex] & \multicolumn{2}{c}{} \\ 
+\\[-1.8ex] & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)}\\ 
+\hline \\[-1.8ex] 
+ Foreign Background &  & 0.009 \\ 
+  &  & (0.010) \\ 
+  & & \\ 
+ Active Certified Teachers &  & 0.006 \\ 
+  &  & (0.004) \\ 
+  & & \\ 
+ Postsecondary Parents &  & -0.042^{***} \\ 
+  &  & (0.011) \\ 
+  & & \\ 
+ Female Students &  & -0.002 \\ 
+  &  & (0.009) \\ 
+  & & \\ 
+ 2014/15 x Grade 10 & 0.724^{***} & 0.794^{***} \\ 
+  & (0.180) & (0.180) \\ 
+  & & \\ 
+ 2015/16 x Grade 10 & 0.633^{***} & 0.696^{***} \\ 
+  & (0.170) & (0.170) \\ 
+  & & \\ 
+ 2016/17 x Grade 10 & 0.412^{**} & 0.487^{***} \\ 
+  & (0.175) & (0.173) \\ 
+  & & \\ 
+ 2017/18 x Grade 10 & 0.433^{***} & 0.466^{***} \\ 
+  & (0.153) & (0.153) \\ 
+  & & \\ 
+ 2019/20 x Grade 10 & -0.127 & -0.120 \\ 
+  & (0.166) & (0.166) \\ 
+  & & \\ 
+ 2020/21 x Grade 10 & -0.282 & -0.258 \\ 
+  & (0.172) & (0.172) \\ 
+  & & \\ 
+\hline \\[-1.8ex] 
+School Fixed Effects & Yes & Yes \\ 
+Time Fixed Effects & Yes & Yes \\ 
+Observations & \multicolumn{1}{c}{8,421} & \multicolumn{1}{c}{8,421} \\ 
+\hline 
+\hline \\[-1.8ex] 
+\end{tabular} 
+\end{table} 

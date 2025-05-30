@@ -1,0 +1,21 @@
+\begin{table}
+\caption{Number of Observations by School Size Group}
+\label{tab:obs_by_school_size}
+\begin{tabular}{lr}
+\toprule
+School Size Group & Number of Observations \\
+\midrule
+1-49 & 1139 \\
+50-99 & 1296 \\
+100-199 & 3341 \\
+200-299 & 4007 \\
+300-399 & 2833 \\
+400-499 & 1819 \\
+500-599 & 1024 \\
+600-699 & 509 \\
+700-799 & 319 \\
+800-899 & 203 \\
+900- & 267 \\
+\bottomrule
+\end{tabular}
+\end{table}

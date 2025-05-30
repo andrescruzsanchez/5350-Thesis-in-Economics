@@ -1,0 +1,14 @@
+\begin{table}
+\caption{Total Number of Unique Schools by Educational Stage and Type of Ownership}
+\label{tab:unique_schools_by_group}
+\begin{tabular}{llr}
+\toprule
+educational_stage & type_of_ownership & number_of_schools \\
+\midrule
+grundskola & Enskild & 373 \\
+grundskola & Kommunal & 1413 \\
+gymnasieskola & Enskild & 257 \\
+gymnasieskola & Kommunal & 527 \\
+\bottomrule
+\end{tabular}
+\end{table}

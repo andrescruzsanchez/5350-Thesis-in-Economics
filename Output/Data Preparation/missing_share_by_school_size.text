@@ -1,0 +1,22 @@
+\begin{table}
+\caption{Share of Missing Values by School Size Group}
+\label{tab:missing_share_by_school_size}
+\begin{tabular}{lrrrrrrr}
+\toprule
+ & share_female_students & share_foreign_background & share_postsecondary_parents & share_active_certified_teachers & share_students_F_sv & share_students_F_eng & share_students_F_ma \\
+school_size &  &  &  &  &  &  &  \\
+\midrule
+1-49 & 0.60 & 0.84 & 0.52 & 0.10 & 0.78 & 0.73 & 0.74 \\
+50-99 & 0.09 & 0.32 & 0.09 & 0.09 & 0.29 & 0.22 & 0.23 \\
+100-199 & 0.03 & 0.13 & 0.04 & 0.09 & 0.07 & 0.04 & 0.04 \\
+200-299 & 0.02 & 0.05 & 0.03 & 0.04 & 0.03 & 0.01 & 0.01 \\
+300-399 & 0.01 & 0.02 & 0.01 & 0.02 & 0.03 & 0.01 & 0.01 \\
+400-499 & 0.01 & 0.02 & 0.01 & 0.04 & 0.03 & 0.00 & 0.00 \\
+500-599 & 0.02 & 0.02 & 0.02 & 0.08 & 0.02 & 0.00 & 0.00 \\
+600-699 & 0.01 & 0.01 & 0.01 & 0.07 & 0.01 & 0.00 & 0.00 \\
+700-799 & 0.01 & 0.01 & 0.01 & 0.14 & 0.01 & 0.00 & 0.00 \\
+800-899 & 0.00 & 0.00 & 0.00 & 0.15 & 0.00 & 0.00 & 0.00 \\
+900- & 0.02 & 0.02 & 0.02 & 0.20 & 0.00 & 0.00 & 0.00 \\
+\bottomrule
+\end{tabular}
+\end{table}

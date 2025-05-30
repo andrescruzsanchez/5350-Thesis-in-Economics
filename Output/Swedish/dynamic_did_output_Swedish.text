@@ -1,56 +1,53 @@
 
 % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-% Date and time: Mon, Apr 14, 2025 - 11:32:57
+% Date and time: Tue, May 27, 2025 - 14:43:23
 % Requires LaTeX packages: dcolumn 
 \begin{table}[!htbp] \centering 
   \caption{Dynamic Difference-in-Difference Models} 
   \label{} 
-\begin{tabular}{@{\extracolsep{5pt}}lD{.}{.}{-3} D{.}{.}{-3} } 
+\begin{tabular}{@{\extracolsep{5pt}}lD{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} } 
 \\[-1.8ex]\hline 
 \hline \\[-1.8ex] 
-\\[-1.8ex] & \multicolumn{2}{c}{Share of Students with F in Swedish} \\ 
- & \multicolumn{1}{c}{Unconditional} & \multicolumn{1}{c}{Conditional} \\ 
-\\[-1.8ex] & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)}\\ 
+ & \multicolumn{5}{c}{Failure Rates in Subject Swedish} \\ 
+\cline{2-6} 
+\\[-1.8ex] & \multicolumn{5}{c}{} \\ 
+\\[-1.8ex] & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)}\\ 
 \hline \\[-1.8ex] 
- Foreign Background &  & 0.014 \\ 
-  &  & (0.010) \\ 
-  & & \\ 
- Active Certified Teachers &  & 0.002 \\ 
-  &  & (0.006) \\ 
-  & & \\ 
- Postsecondary Parents &  & -0.044^{***} \\ 
-  &  & (0.013) \\ 
-  & & \\ 
- Female Students &  & 0.006 \\ 
-  &  & (0.008) \\ 
-  & & \\ 
- Year -5 & -0.031 & 0.066 \\ 
-  & (0.300) & (0.299) \\ 
-  & & \\ 
- Year -4 & 0.273 & 0.354 \\ 
-  & (0.280) & (0.278) \\ 
-  & & \\ 
- Year -3 & 0.088 & 0.162 \\ 
-  & (0.284) & (0.281) \\ 
-  & & \\ 
- Year -2 & 0.011 & 0.045 \\ 
-  & (0.249) & (0.248) \\ 
-  & & \\ 
- Year 0 & -0.512^{*} & -0.497^{*} \\ 
-  & (0.271) & (0.270) \\ 
-  & & \\ 
- Year 1 & -0.260 & -0.236 \\ 
-  & (0.278) & (0.279) \\ 
-  & & \\ 
- Year 2 & -1.050^{***} & -1.009^{***} \\ 
-  & (0.292) & (0.291) \\ 
-  & & \\ 
+ Foreign Background &  & 0.017 & 0.017 & 0.006 & 0.006 \\ 
+  &  & (0.012) & (0.011) & (0.013) & (0.013) \\ 
+  & & & & & \\ 
+ Active Certified Teachers &  &  & 0.003 & 0.002 & 0.002 \\ 
+  &  &  & (0.006) & (0.006) & (0.006) \\ 
+  & & & & & \\ 
+ Postsecondary Parents &  &  &  & -0.030^{**} & -0.030^{**} \\ 
+  &  &  &  & (0.015) & (0.015) \\ 
+  & & & & & \\ 
+ Female Students &  &  &  &  & 0.004 \\ 
+  &  &  &  &  & (0.010) \\ 
+  & & & & & \\ 
+ 2014/15 x Grade 10 & 0.502 & 0.546 & 0.556 & 0.559 & 0.559 \\ 
+  & (0.365) & (0.364) & (0.368) & (0.367) & (0.367) \\ 
+  & & & & & \\ 
+ 2015/16 x Grade 10 & 0.538 & 0.571^{*} & 0.575^{*} & 0.581^{*} & 0.582^{*} \\ 
+  & (0.336) & (0.334) & (0.337) & (0.337) & (0.337) \\ 
+  & & & & & \\ 
+ 2016/17 x Grade 10 & 0.300 & 0.331 & 0.331 & 0.336 & 0.337 \\ 
+  & (0.334) & (0.331) & (0.331) & (0.331) & (0.331) \\ 
+  & & & & & \\ 
+ 2017/18 x Grade 10 & 0.216 & 0.228 & 0.230 & 0.231 & 0.231 \\ 
+  & (0.287) & (0.286) & (0.287) & (0.287) & (0.287) \\ 
+  & & & & & \\ 
+ 2019/20 x Grade 10 & -0.081 & -0.079 & -0.081 & -0.065 & -0.066 \\ 
+  & (0.304) & (0.304) & (0.302) & (0.302) & (0.302) \\ 
+  & & & & & \\ 
+ 2020/21 x Grade 10 & -0.297 & -0.300 & -0.300 & -0.273 & -0.275 \\ 
+  & (0.334) & (0.335) & (0.335) & (0.335) & (0.335) \\ 
+  & & & & & \\ 
 \hline \\[-1.8ex] 
-School Fixed Effects & No & Yes \\ 
-Time Fixed Effects & Yes & Yes \\ 
-Observations & \multicolumn{1}{c}{4,448} & \multicolumn{1}{c}{4,448} \\ 
+School Fixed Effects & Yes & Yes & Yes & Yes & Yes \\ 
+Time Fixed Effects & Yes & Yes & Yes & Yes & Yes \\ 
+Observations & \multicolumn{1}{c}{3,374} & \multicolumn{1}{c}{3,374} & \multicolumn{1}{c}{3,374} & \multicolumn{1}{c}{3,374} & \multicolumn{1}{c}{3,374} \\ 
 \hline 
 \hline \\[-1.8ex] 
-Note: & \multicolumn{2}{r}{The academic year 2018/19 is the reference year. Errors are clustered at the school level. Significance levels: * p<0.10, ** p<0.05, *** p<0.01} \\ 
 \end{tabular} 
 \end{table} 
