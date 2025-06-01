@@ -12,6 +12,27 @@
 #
 #
 
+# -------- SET THE LANGUAGE  -------- #
+
+# Options: "English", "Swedish", or "Mathematics"
+language <- "English"
+
+# Map the chosen language to its corresponding suffix.
+lang_suffix <- switch(language,
+                      "Swedish" = "sv",
+                      "English" = "eng",
+                      "Mathematics" = "ma",
+                      stop("Unsupported language"))
+
+#
+#
+#
+#
+#
+#
+#
+#
+
 # -------- Initializing -------- #
 
 # Loading packages 
@@ -47,17 +68,6 @@ setwd("~/Documents/Handelshögskolan/MSc Economic/Semester 4/5350 Thesis in Econ
 
 # Reading school data excel file 
 school_data <- read_excel("School_Data.xlsx", sheet = "All")
-
-# Set the language
-# Options: "English", "Swedish", or "Mathematics"
-language <- "English"
-
-# Map the chosen language to its corresponding suffix.
-lang_suffix <- switch(language,
-                      "Swedish" = "sv",
-                      "English" = "eng",
-                      "Mathematics" = "ma",
-                      stop("Unsupported language"))
 
 #
 #
